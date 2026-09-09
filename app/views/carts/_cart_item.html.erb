@@ -1,0 +1,17 @@
+<tr>
+  <td>
+    <%= link_to item.product_variant.product.name, product_path(item.product_variant.product) %><br>
+    <span class="product-card__category"><%= item.product_variant.label %></span>
+  </td>
+  <td><%= euro_price(item.product_variant.price_cents) %></td>
+  <td>
+    <%= form_with url: cart_item_path(item), method: :patch, class: "quantity-form" do %>
+      <%= number_field_tag :quantity, item.quantity, min: 1, max: item.product_variant.stock %>
+      <%= submit_tag "Update", class: "button button--secondary" %>
+    <% end %>
+  </td>
+  <td><%= euro_price(item.line_subtotal_cents) %></td>
+  <td>
+    <%= button_to "Remove", cart_item_path(item), method: :delete, class: "button button--secondary" %>
+  </td>
+</tr>

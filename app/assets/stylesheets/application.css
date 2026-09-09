@@ -1,0 +1,447 @@
+/*
+ * Bibo — Phase 1 baseline styles.
+ * A restrained set of design tokens and layout rules so the catalogue and
+ * domain can be browsed cleanly. The polished storefront is Phase 2 work.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+:root {
+  --color-bg: #FAF6F1;
+  --color-bg-alt: #F2E9DE;
+  --color-surface: #FFFFFF;
+  --color-text: #2B2622;
+  --color-text-muted: #6B615A;
+  --color-accent: #C97B84;
+  --color-accent-dark: #B5636D;
+  --color-border: #E4DACD;
+
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  margin: 0 0 var(--space-sm);
+}
+
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+/* Header */
+
+.site-header {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) 0;
+}
+
+.site-header__logo {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  color: var(--color-accent-dark);
+}
+
+.site-header__nav {
+  display: flex;
+  gap: var(--space-md);
+  font-size: 0.95rem;
+}
+
+.site-header__nav a:hover {
+  color: var(--color-accent-dark);
+}
+
+.site-header__cart {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.4rem 0.9rem;
+  background: var(--color-surface);
+}
+
+/* Flash messages */
+
+.flash {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  margin: var(--space-sm) 0;
+  font-size: 0.9rem;
+}
+
+.flash--notice {
+  background: #EEF3E9;
+  color: #4B5C3C;
+}
+
+.flash--alert {
+  background: #F6E6E3;
+  color: #8C4437;
+}
+
+/* Hero */
+
+.hero {
+  padding: var(--space-xl) 0;
+  text-align: left;
+}
+
+.hero__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.hero h1 {
+  font-size: 2.75rem;
+  max-width: 20ch;
+}
+
+.hero p {
+  color: var(--color-text-muted);
+  max-width: 45ch;
+  font-size: 1.05rem;
+}
+
+.button {
+  display: inline-block;
+  background: var(--color-accent);
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.button:hover,
+.button:active {
+  background: var(--color-accent-dark);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-accent-dark);
+  outline-offset: 2px;
+}
+
+.button--secondary {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+/* .button:hover/:active above set a solid dusty-pink background on any
+   element with the shared .button class. Without an explicit background
+   here too, that solid pink leaks through and matches the accent text
+   colour below, making the label disappear on hover. */
+.button--secondary:hover,
+.button--secondary:active {
+  background: var(--color-bg-alt);
+  border-color: var(--color-accent);
+  color: var(--color-accent-dark);
+}
+
+.button[disabled] {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+/* Section headings */
+
+.section {
+  padding: var(--space-lg) 0;
+}
+
+.section__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.section__header a {
+  font-size: 0.9rem;
+  color: var(--color-accent-dark);
+}
+
+/* Category chips */
+
+.category-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.category-chip {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 0.6rem 1.1rem;
+  background: var(--color-surface);
+  font-size: 0.9rem;
+}
+
+.category-chip:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent-dark);
+}
+
+/* Product grid & card */
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+
+.product-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card__image {
+  aspect-ratio: 1 / 1;
+  background: var(--color-bg-alt);
+  overflow: hidden;
+}
+
+.product-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-card__body {
+  padding: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.product-card__category {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
+.product-card__name {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+}
+
+.product-card__price {
+  font-weight: 600;
+}
+
+.product-card__rating {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+/* Product detail */
+
+.product-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  padding: var(--space-lg) 0;
+}
+
+.product-detail__gallery {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.product-detail__gallery img {
+  width: 100%;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-alt);
+}
+
+.product-detail__thumbs {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.product-detail__thumbs img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.product-detail__price {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: var(--space-xs) 0;
+}
+
+.product-detail__rating {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin-bottom: var(--space-sm);
+}
+
+.product-detail__section {
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-md) 0;
+}
+
+.form-field {
+  margin-bottom: var(--space-sm);
+}
+
+.form-field label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.form-field select,
+.form-field input[type="number"] {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  background: var(--color-surface);
+}
+
+.stock-note {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.stock-note--low {
+  color: var(--color-accent-dark);
+}
+
+.stock-note--out {
+  color: #A33;
+}
+
+/* Reviews */
+
+.review {
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-sm) 0;
+}
+
+.review__meta {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.review__title {
+  font-weight: 600;
+  margin: 0.25rem 0;
+}
+
+/* Cart */
+
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cart-table th,
+.cart-table td {
+  text-align: left;
+  padding: var(--space-sm) 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cart-summary {
+  max-width: 320px;
+  margin-left: auto;
+  margin-top: var(--space-md);
+}
+
+.cart-summary__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+}
+
+.cart-summary__row--total {
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.quantity-form {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quantity-form input[type="number"] {
+  width: 4rem;
+}
+
+.empty-state {
+  padding: var(--space-lg) 0;
+  color: var(--color-text-muted);
+}
+
+/* Footer */
+
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-lg) 0;
+  margin-top: var(--space-xl);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}

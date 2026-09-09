@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+  <rect width="800" height="800" fill="#F2E9DE"/>
+  <circle cx="400" cy="340" r="180" fill="#D4A24C" fill-opacity="0.18"/>
+  <circle cx="400" cy="340" r="110" fill="#D4A24C" fill-opacity="0.28"/>
+  <text x="400" y="620" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="40" fill="#5B5148">Lighting</text>
+  <text x="400" y="665" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="18" letter-spacing="2" fill="#9C9186">BIBO</text>
+</svg>

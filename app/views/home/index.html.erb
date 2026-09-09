@@ -1,0 +1,41 @@
+<section class="hero">
+  <p class="hero__eyebrow">Small details, a nicer home</p>
+  <h1>Everyday essentials for a more you.</h1>
+  <p>Cute, functional and affordable pieces for a home you love.</p>
+  <%= link_to "Shop now", products_path, class: "button" %>
+</section>
+
+<section class="section">
+  <div class="section__header">
+    <h2>Categories</h2>
+  </div>
+  <div class="category-grid">
+    <% @categories.each do |category| %>
+      <%= link_to category.name, category_path(category), class: "category-chip" %>
+    <% end %>
+  </div>
+</section>
+
+<% if @trending_products.any? %>
+  <section class="section">
+    <div class="section__header">
+      <h2>Trending now</h2>
+      <%= link_to "View all", products_path %>
+    </div>
+    <div class="product-grid">
+      <%= render partial: "products/product_card", collection: @trending_products, as: :product %>
+    </div>
+  </section>
+<% end %>
+
+<% if @featured_products.any? %>
+  <section class="section">
+    <div class="section__header">
+      <h2>Featured</h2>
+      <%= link_to "View all", products_path %>
+    </div>
+    <div class="product-grid">
+      <%= render partial: "products/product_card", collection: @featured_products, as: :product %>
+    </div>
+  </section>
+<% end %>

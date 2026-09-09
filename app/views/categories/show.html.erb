@@ -1,0 +1,12 @@
+<h1><%= @category.name %></h1>
+<% if @category.description.present? %>
+  <p><%= @category.description %></p>
+<% end %>
+
+<% if @products.any? %>
+  <div class="product-grid">
+    <%= render partial: "products/product_card", collection: @products, as: :product %>
+  </div>
+<% else %>
+  <p class="empty-state">No products in this category yet.</p>
+<% end %>

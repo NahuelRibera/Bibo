@@ -1,0 +1,21 @@
+<div class="product-card">
+  <%= link_to product_path(product), class: "product-card__image" do %>
+    <% if (image = product.product_images.first) %>
+      <%= image_tag image.image_path, alt: image.alt_text %>
+    <% end %>
+  <% end %>
+
+  <div class="product-card__body">
+    <span class="product-card__category"><%= product.category.name %></span>
+    <%= link_to product.name, product_path(product), class: "product-card__name" %>
+    <span class="product-card__price">From <%= euro_price(product.base_price_cents) %></span>
+
+    <span class="product-card__rating">
+      <% if product.reviews_count > 0 %>
+        ★ <%= number_with_precision(product.average_rating, precision: 1) %> (<%= product.reviews_count %>)
+      <% else %>
+        No reviews yet
+      <% end %>
+    </span>
+  </div>
+</div>

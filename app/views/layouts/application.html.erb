@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bibo</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <%= link_to "Bibo", root_path, class: "site-header__logo" %>
+
+        <nav class="site-header__nav">
+          <%= link_to "Home", root_path %>
+          <%= link_to "Shop", products_path %>
+          <%= link_to "Categories", categories_path %>
+        </nav>
+
+        <%= link_to cart_path, class: "site-header__cart" do %>
+          Cart (<%= current_cart.cart_items.sum(:quantity) %>)
+        <% end %>
+      </div>
+    </header>
+
+    <main class="container">
+      <% if notice %>
+        <p class="flash flash--notice"><%= notice %></p>
+      <% end %>
+      <% if alert %>
+        <p class="flash flash--alert"><%= alert %></p>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        Bibo — thoughtfully curated home essentials.
+      </div>
+    </footer>
+  </body>
+</html>

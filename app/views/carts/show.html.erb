@@ -1,0 +1,39 @@
+<h1>Your cart</h1>
+
+<% if @cart_items.any? %>
+  <table class="cart-table">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Subtotal</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @cart_items.each do |item| %>
+        <%= render partial: "carts/cart_item", locals: { item: item } %>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="cart-summary">
+    <div class="cart-summary__row">
+      <span>Subtotal</span>
+      <span><%= euro_price(@cart.subtotal_cents) %></span>
+    </div>
+    <div class="cart-summary__row">
+      <span>Shipping</span>
+      <span><%= @cart.shipping_cents.zero? ? "Free" : euro_price(@cart.shipping_cents) %></span>
+    </div>
+    <div class="cart-summary__row cart-summary__row--total">
+      <span>Total</span>
+      <span><%= euro_price(@cart.total_cents) %></span>
+    </div>
+  </div>
+<% else %>
+  <p class="empty-state">
+    Your cart is empty. <%= link_to "Continue shopping", products_path %>.
+  </p>
+<% end %>
