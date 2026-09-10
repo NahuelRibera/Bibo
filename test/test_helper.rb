@@ -1,6 +1,7 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
+require "minitest/mock" # for Object#stub, used to fake Stripe API calls in tests
 
 module ActiveSupport
   class TestCase
@@ -37,6 +38,54 @@ module ActiveSupport
         stock: stock,
         active: active
       )
+    end
+
+    def create_order(status: "pending", subtotal_cents: 1000, shipping_cents: 499)
+      Order.create!(
+        status: status,
+        currency: "eur",
+        subtotal_cents: subtotal_cents,
+        shipping_cents: shipping_cents,
+        total_cents: subtotal_cents + shipping_cents
+      )
+    end
+
+    def create_order_item(order: create_order, product_variant: create_variant, quantity: 1)
+      unit_price_cents = product_variant.price_cents
+
+      OrderItem.create!(
+        order: order,
+        product_variant: product_variant,
+        product_name: product_variant.product.name,
+        product_slug: product_variant.product.slug,
+        variant_label: product_variant.label == "Standard" ? nil : product_variant.label,
+        sku: product_variant.sku,
+        unit_price_cents: unit_price_cents,
+        quantity: quantity,
+        line_total_cents: unit_price_cents * quantity
+      )
+    end
+
+    # A minimal stand-in for a Stripe::Checkout::Session, exposing just the
+    # fields the app reads (id/url on creation, payment_status/payment_intent/
+    # customer_details on retrieval) so tests never hit the real Stripe API.
+    def fake_stripe_session(id: "cs_test_#{SecureRandom.hex(8)}", url: "https://checkout.stripe.com/pay/#{SecureRandom.hex(8)}",
+                             payment_status: "unpaid", payment_intent: "pi_test_#{SecureRandom.hex(8)}", email: nil)
+      OpenStruct.new(
+        id: id,
+        url: url,
+        payment_status: payment_status,
+        payment_intent: payment_intent,
+        customer_details: email ? OpenStruct.new(email: email) : nil
+      )
+    end
+
+    # Builds a real, validly-signed Stripe-Signature header value the same
+    # way Stripe itself would, using the gem's own signing helper - so
+    # webhook tests exercise the actual verification path, not a stub of it.
+    def stripe_signature_header(payload, secret:, timestamp: Time.now)
+      signature = Stripe::Webhook::Signature.compute_signature(timestamp, payload, secret)
+      Stripe::Webhook::Signature.generate_header(timestamp, signature)
     end
   end
 end

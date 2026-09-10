@@ -1,7 +1,11 @@
 <h1>Categories</h1>
+<p>Browse the full catalogue by room and use.</p>
 
-<div class="category-grid">
+<div class="quick-categories">
   <% @categories.each do |category| %>
-    <%= link_to category.name, category_path(category), class: "category-chip" %>
+    <%= link_to category_path(category), class: "quick-category" do %>
+      <span class="quick-category__icon"><%= category_icon(category.slug, size: 32) %></span>
+      <span class="quick-category__label"><%= category.name %></span>
+    <% end %>
   <% end %>
 </div>

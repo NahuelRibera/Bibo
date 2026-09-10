@@ -23,13 +23,19 @@ class Cart < ApplicationRecord
     item
   end
 
+  # Shared with CheckoutsController, which computes its own subtotal from
+  # order line snapshots rather than a live cart, so the two never drift.
+  def self.shipping_cents_for(subtotal_cents)
+    subtotal_cents >= FREE_SHIPPING_THRESHOLD_CENTS ? 0 : SHIPPING_CENTS
+  end
+
   def subtotal_cents
     cart_items.includes(:product_variant).sum(&:line_subtotal_cents)
   end
 
   def shipping_cents
     return 0 if cart_items.empty?
-    subtotal_cents >= FREE_SHIPPING_THRESHOLD_CENTS ? 0 : SHIPPING_CENTS
+    self.class.shipping_cents_for(subtotal_cents)
   end
 
   def total_cents

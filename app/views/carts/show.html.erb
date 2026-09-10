@@ -1,39 +1,55 @@
 <h1>Your cart</h1>
 
 <% if @cart_items.any? %>
-  <table class="cart-table">
-    <thead>
-      <tr>
-        <th>Item</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th>Subtotal</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
+  <div class="cart-layout">
+    <div class="cart-lines">
       <% @cart_items.each do |item| %>
         <%= render partial: "carts/cart_item", locals: { item: item } %>
       <% end %>
-    </tbody>
-  </table>
+    </div>
 
-  <div class="cart-summary">
-    <div class="cart-summary__row">
-      <span>Subtotal</span>
-      <span><%= euro_price(@cart.subtotal_cents) %></span>
-    </div>
-    <div class="cart-summary__row">
-      <span>Shipping</span>
-      <span><%= @cart.shipping_cents.zero? ? "Free" : euro_price(@cart.shipping_cents) %></span>
-    </div>
-    <div class="cart-summary__row cart-summary__row--total">
-      <span>Total</span>
-      <span><%= euro_price(@cart.total_cents) %></span>
+    <div class="order-summary">
+      <h2>Order summary</h2>
+
+      <div class="order-summary__row">
+        <span>Subtotal</span>
+        <span><%= euro_price(@cart.subtotal_cents) %></span>
+      </div>
+      <div class="order-summary__row">
+        <span>Shipping</span>
+        <span><%= @cart.shipping_cents.zero? ? "Free" : euro_price(@cart.shipping_cents) %></span>
+      </div>
+
+      <% remaining_cents = Cart::FREE_SHIPPING_THRESHOLD_CENTS - @cart.subtotal_cents %>
+      <% if remaining_cents.positive? %>
+        <div class="shipping-progress">
+          <%= euro_price(remaining_cents) %> away from free shipping
+          <div class="shipping-progress__bar">
+            <div class="shipping-progress__fill" style="width: <%= [(@cart.subtotal_cents.to_f / Cart::FREE_SHIPPING_THRESHOLD_CENTS * 100), 100].min %>%"></div>
+          </div>
+        </div>
+      <% else %>
+        <p class="shipping-progress">You've unlocked free shipping.</p>
+      <% end %>
+
+      <div class="order-summary__row order-summary__row--total">
+        <span>Total</span>
+        <span><%= euro_price(@cart.total_cents) %></span>
+      </div>
+
+      <% if stripe_configured? %>
+        <%= button_to "Checkout", checkout_path, class: "button button--block", form: { data: { turbo: false } } %>
+        <p class="checkout-note">Stripe test mode. Use card 4242 4242 4242 4242, any future date and CVC.</p>
+      <% else %>
+        <%= button_tag "Checkout", type: "button", class: "button button--block", disabled: true, aria: { disabled: "true" } %>
+        <p class="checkout-note">Demo checkout requires Stripe test credentials.</p>
+      <% end %>
     </div>
   </div>
 <% else %>
-  <p class="empty-state">
-    Your cart is empty. <%= link_to "Continue shopping", products_path %>.
-  </p>
+  <div class="empty-state">
+    <h3>Your cart is empty.</h3>
+    <p>Find a piece you'll love and it'll show up here.</p>
+    <%= link_to "Continue shopping", products_path, class: "button" %>
+  </div>
 <% end %>

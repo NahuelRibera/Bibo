@@ -26,6 +26,9 @@ gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
+# Stripe Checkout (test mode) for the demo payment flow [https://github.com/stripe/stripe-ruby]
+gem "stripe"
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
@@ -47,6 +50,10 @@ gem "bootsnap", require: false
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mswin mswin64 mingw x64_mingw ]
+
+  # Loads STRIPE_* keys (and anything else) from a local .env file, since
+  # Rails does not read .env files on its own. Never loaded in production.
+  gem "dotenv-rails"
 end
 
 group :development do

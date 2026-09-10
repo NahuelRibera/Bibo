@@ -1,6 +1,10 @@
 class ProductVariant < ApplicationRecord
   belongs_to :product
   has_many :cart_items, dependent: :restrict_with_error
+  # order_items intentionally has no `dependent:` option: the database
+  # foreign key (on_delete: :nullify) already detaches historical order
+  # snapshots from a deleted variant without destroying them.
+  has_many :order_items
 
   validates :sku, presence: true, uniqueness: true
   validates :price_cents, presence: true, numericality: { greater_than_or_equal_to: 0, only_integer: true }
@@ -14,7 +18,7 @@ class ProductVariant < ApplicationRecord
   # present, so no product-specific logic is needed to render a selector.
   def label
     parts = [option_label, colour].compact_blank
-    parts.any? ? parts.join(" — ") : "Standard"
+    parts.any? ? parts.join(", ") : "Standard"
   end
 
   def purchasable?

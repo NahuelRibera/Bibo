@@ -1,0 +1,13 @@
+<div id="<%= dom_id(product, :wishlist_button) %>" class="wishlist-button-wrap">
+  <% if in_wishlist?(product) %>
+    <%= button_to wishlist_item_path(product), method: :delete, class: "icon-button wishlist-toggle is-active", form: { class: "wishlist-form" } do %>
+      <%= icon(:heart, filled: true) %>
+      <span class="visually-hidden">Remove <%= product.name %> from wishlist</span>
+    <% end %>
+  <% else %>
+    <%= button_to wishlist_items_path(product_id: product.id), method: :post, class: "icon-button wishlist-toggle", form: { class: "wishlist-form" } do %>
+      <%= icon(:heart, filled: false) %>
+      <span class="visually-hidden">Add <%= product.name %> to wishlist</span>
+    <% end %>
+  <% end %>
+</div>

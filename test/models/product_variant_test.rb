@@ -68,7 +68,7 @@ class ProductVariantTest < ActiveSupport::TestCase
 
   test "label combines option and colour generically" do
     both = create_variant(colour: "Natural", option_label: "Set of 3")
-    assert_equal "Set of 3 — Natural", both.label
+    assert_equal "Set of 3, Natural", both.label
 
     colour_only = create_variant(colour: "Cream", option_label: nil)
     assert_equal "Cream", colour_only.label

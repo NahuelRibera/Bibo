@@ -1,9 +1,13 @@
-<div class="product-card">
+<div class="product-card" id="<%= dom_id(product, :wishlist_card) %>">
   <%= link_to product_path(product), class: "product-card__image" do %>
     <% if (image = product.product_images.first) %>
       <%= image_tag image.image_path, alt: image.alt_text %>
     <% end %>
   <% end %>
+
+  <div class="product-card__wishlist">
+    <%= render "products/wishlist_button", product: product %>
+  </div>
 
   <div class="product-card__body">
     <span class="product-card__category"><%= product.category.name %></span>
@@ -12,7 +16,8 @@
 
     <span class="product-card__rating">
       <% if product.reviews_count > 0 %>
-        ★ <%= number_with_precision(product.average_rating, precision: 1) %> (<%= product.reviews_count %>)
+        <%= star_rating(product.average_rating) %>
+        <%= number_with_precision(product.average_rating, precision: 1) %> (<%= product.reviews_count %>)
       <% else %>
         No reviews yet
       <% end %>

@@ -12,4 +12,17 @@ Rails.application.routes.draw do
 
   resource :cart, only: [:show]
   resources :cart_items, only: [:create, :update, :destroy]
+
+  resource :wishlist, only: [:show]
+  resources :wishlist_items, only: [:create, :destroy]
+
+  resource :checkout, only: [:create]
+  get "checkout/success", to: "checkouts#success", as: :checkout_success
+  get "checkout/cancel", to: "checkouts#cancel", as: :checkout_cancel
+  resources :orders, only: [:show], param: :token
+
+  post "webhooks/stripe", to: "stripe_webhooks#create"
+
+  get "about", to: "pages#about"
+  get "account", to: "pages#account"
 end

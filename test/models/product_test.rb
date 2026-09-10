@@ -68,4 +68,40 @@ class ProductTest < ActiveSupport::TestCase
     assert_equal 2, product.reviews_count
     assert_equal 4.0, product.average_rating.to_f
   end
+
+  test "variant_axes hides both axes for a single-configuration product" do
+    product = create_product
+    create_variant(product: product, colour: nil, option_label: nil)
+
+    axes = product.variant_axes
+
+    assert_not axes[:show_sizes]
+    assert_not axes[:show_colours]
+  end
+
+  test "variant_axes shows only the colour axis when only colour varies" do
+    product = create_product
+    create_variant(product: product, sku: "A", colour: "Cream")
+    create_variant(product: product, sku: "B", colour: "Olive")
+
+    axes = product.variant_axes
+
+    assert_not axes[:show_sizes]
+    assert axes[:show_colours]
+    assert_equal ["Cream", "Olive"], axes[:colours]
+  end
+
+  test "variant_axes shows both axes for a full size/colour matrix" do
+    product = create_product
+    create_variant(product: product, sku: "A", option_label: "Set of 2", colour: "Natural")
+    create_variant(product: product, sku: "B", option_label: "Set of 3", colour: "Natural")
+    create_variant(product: product, sku: "C", option_label: "Set of 2", colour: "Walnut")
+
+    axes = product.variant_axes
+
+    assert axes[:show_sizes]
+    assert axes[:show_colours]
+    assert_equal 3, axes[:variants].size
+    assert_equal({ size: "Set of 2", colour: "Natural" }, axes[:variants].first.slice(:size, :colour))
+  end
 end

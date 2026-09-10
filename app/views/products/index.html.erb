@@ -1,5 +1,79 @@
-<h1>Shop</h1>
-
-<div class="product-grid">
-  <%= render partial: "products/product_card", collection: @products, as: :product %>
+<div class="catalogue-header">
+  <div>
+    <h1>Shop</h1>
+    <p><%= pluralize(@products.size, "piece") %> found</p>
+  </div>
 </div>
+
+<%= form_with url: products_path, method: :get, data: { controller: "auto-submit" }, class: "catalogue-toolbar", role: "search" do %>
+  <div class="catalogue-toolbar__search">
+    <%= icon(:search) %>
+    <%= label_tag :q, "Search", class: "visually-hidden" %>
+    <%= search_field_tag :q, params[:q], placeholder: "Search products…" %>
+  </div>
+
+  <div class="catalogue-toolbar__group">
+    <%= label_tag :category, "Category" %>
+    <%= select_tag :category,
+          options_for_select([["All categories", ""]] + @categories.map { |c| [c.name, c.slug] }, params[:category]),
+          data: { action: "change->auto-submit#submit" } %>
+  </div>
+
+  <% if @colours.any? %>
+    <div class="catalogue-toolbar__group">
+      <%= label_tag :colour, "Colour" %>
+      <%= select_tag :colour,
+            options_for_select([["Any colour", ""]] + @colours.map { |c| [c, c] }, params[:colour]),
+            data: { action: "change->auto-submit#submit" } %>
+    </div>
+  <% end %>
+
+  <div class="catalogue-toolbar__group">
+    <%= label_tag :sort, "Sort by" %>
+    <%= select_tag :sort,
+          options_for_select([
+            ["Featured", "featured"],
+            ["Newest", "newest"],
+            ["Price: Low to High", "price_asc"],
+            ["Price: High to Low", "price_desc"],
+            ["Rating", "rating"],
+          ], @selected_sort),
+          data: { action: "change->auto-submit#submit" } %>
+  </div>
+
+  <button type="submit" class="visually-hidden">Apply filters</button>
+<% end %>
+
+<% if params[:q].present? || params[:category].present? || params[:colour].present? %>
+  <div class="active-filters">
+    <span>Filtering by:</span>
+    <% if params[:q].present? %>
+      <%= link_to products_path(request.query_parameters.except("q")), class: "chip" do %>
+        “<%= params[:q] %>” <%= icon(:close, size: 12) %>
+      <% end %>
+    <% end %>
+    <% if params[:category].present? %>
+      <%= link_to products_path(request.query_parameters.except("category")), class: "chip" do %>
+        <%= @categories.find { |c| c.slug == params[:category] }&.name || params[:category] %> <%= icon(:close, size: 12) %>
+      <% end %>
+    <% end %>
+    <% if params[:colour].present? %>
+      <%= link_to products_path(request.query_parameters.except("colour")), class: "chip" do %>
+        <%= params[:colour] %> <%= icon(:close, size: 12) %>
+      <% end %>
+    <% end %>
+    <%= link_to "Clear all", products_path, class: "chip" %>
+  </div>
+<% end %>
+
+<% if @products.any? %>
+  <div class="product-grid">
+    <%= render partial: "products/product_card", collection: @products, as: :product %>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <h3>No pieces found for that search.</h3>
+    <p>Try a different term, or clear your filters to see the full catalogue.</p>
+    <%= link_to "Clear filters", products_path, class: "button" %>
+  </div>
+<% end %>

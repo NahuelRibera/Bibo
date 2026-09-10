@@ -1,0 +1,72 @@
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <%= link_to "Home", root_path %>
+  <span aria-hidden="true">/</span>
+  <span aria-current="page">Order</span>
+</nav>
+
+<div class="section">
+  <% if @order.paid? %>
+    <p class="eyebrow">Order confirmed</p>
+    <h1>Your space just got a little nicer.</h1>
+    <p>
+      Thanks for your order.
+      <% if @order.customer_email.present? %>
+        A confirmation was sent to <%= @order.customer_email %>.
+      <% end %>
+    </p>
+  <% elsif @order.pending? %>
+    <p class="eyebrow">Order</p>
+    <h1>Still confirming your payment</h1>
+    <p>This usually takes a few seconds. Refresh this page in a moment.</p>
+  <% else %>
+    <p class="eyebrow">Order</p>
+    <h1>This order was cancelled</h1>
+    <p>No payment was taken.</p>
+  <% end %>
+</div>
+
+<div class="cart-layout">
+  <div class="cart-lines">
+    <% @order.order_items.each do |item| %>
+      <% image = item.product_variant&.product&.product_images&.first %>
+      <div class="cart-line">
+        <div class="cart-line__image">
+          <% if image %>
+            <%= image_tag image.image_path, alt: image.alt_text %>
+          <% end %>
+        </div>
+        <div>
+          <p class="cart-line__name"><%= item.product_name %></p>
+          <% if item.variant_label.present? %>
+            <p class="cart-line__variant"><%= item.variant_label %></p>
+          <% end %>
+          <p class="cart-line__unit-price"><%= euro_price(item.unit_price_cents) %> each &middot; Qty <%= item.quantity %></p>
+        </div>
+        <div class="cart-line__controls">
+          <span class="cart-line__subtotal"><%= euro_price(item.line_total_cents) %></span>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="order-summary">
+    <h2>Order summary</h2>
+    <div class="order-summary__row">
+      <span>Subtotal</span>
+      <span><%= euro_price(@order.subtotal_cents) %></span>
+    </div>
+    <div class="order-summary__row">
+      <span>Shipping</span>
+      <span><%= @order.shipping_cents.zero? ? "Free" : euro_price(@order.shipping_cents) %></span>
+    </div>
+    <div class="order-summary__row order-summary__row--total">
+      <span>Total</span>
+      <span><%= euro_price(@order.total_cents) %></span>
+    </div>
+    <p class="checkout-note">Placed <%= @order.created_at.strftime("%d %b %Y") %></p>
+  </div>
+</div>
+
+<div class="button-row">
+  <%= link_to "Continue shopping", products_path, class: "button" %>
+</div>

@@ -1,0 +1,13 @@
+<%= turbo_stream.replace dom_id(@product, :wishlist_button) do %>
+  <%= render "products/wishlist_button", product: @product %>
+<% end %>
+<%= turbo_stream.replace "wishlist_count" do %>
+  <%= render "shared/wishlist_badge" %>
+<% end %>
+<% if wishlist_product_ids.empty? %>
+  <%= turbo_stream.replace "wishlist_content" do %>
+    <%= render "wishlists/empty_state" %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.remove dom_id(@product, :wishlist_card) %>
+<% end %>

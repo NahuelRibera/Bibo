@@ -1,17 +1,29 @@
-<tr>
-  <td>
-    <%= link_to item.product_variant.product.name, product_path(item.product_variant.product) %><br>
-    <span class="product-card__category"><%= item.product_variant.label %></span>
-  </td>
-  <td><%= euro_price(item.product_variant.price_cents) %></td>
-  <td>
-    <%= form_with url: cart_item_path(item), method: :patch, class: "quantity-form" do %>
-      <%= number_field_tag :quantity, item.quantity, min: 1, max: item.product_variant.stock %>
-      <%= submit_tag "Update", class: "button button--secondary" %>
+<div class="cart-line" id="<%= dom_id(item) %>">
+  <div class="cart-line__image">
+    <% if (image = item.product_variant.product.product_images.first) %>
+      <%= image_tag image.image_path, alt: image.alt_text %>
     <% end %>
-  </td>
-  <td><%= euro_price(item.line_subtotal_cents) %></td>
-  <td>
-    <%= button_to "Remove", cart_item_path(item), method: :delete, class: "button button--secondary" %>
-  </td>
-</tr>
+  </div>
+
+  <div>
+    <%= link_to item.product_variant.product.name, product_path(item.product_variant.product), class: "cart-line__name" %>
+    <p class="cart-line__variant"><%= item.product_variant.label %></p>
+    <p class="cart-line__unit-price"><%= euro_price(item.product_variant.price_cents) %> each</p>
+
+    <%= form_with url: cart_item_path(item), method: :patch, data: { controller: "auto-submit" } do %>
+      <div class="quantity-stepper" data-controller="quantity">
+        <button type="button" data-action="quantity#decrement" aria-label="Decrease quantity for <%= item.product_variant.product.name %>"><%= icon(:minus, size: 14) %></button>
+        <%= label_tag "quantity_#{item.id}", "Quantity", class: "visually-hidden" %>
+        <%= number_field_tag :quantity, item.quantity, id: "quantity_#{item.id}", min: 1, max: item.product_variant.stock,
+              data: { quantity_target: "input", action: "change->auto-submit#submit" } %>
+        <button type="button" data-action="quantity#increment" aria-label="Increase quantity for <%= item.product_variant.product.name %>"><%= icon(:plus, size: 14) %></button>
+      </div>
+      <%= button_tag "Update", type: "submit", class: "button button--ghost button--small" %>
+    <% end %>
+  </div>
+
+  <div class="cart-line__controls">
+    <span class="cart-line__subtotal"><%= euro_price(item.line_subtotal_cents) %></span>
+    <%= button_to "Remove", cart_item_path(item), method: :delete, class: "cart-line__remove", form: { class: "wishlist-form" } %>
+  </div>
+</div>

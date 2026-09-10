@@ -1,12 +1,28 @@
-<h1><%= @category.name %></h1>
-<% if @category.description.present? %>
-  <p><%= @category.description %></p>
-<% end %>
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <%= link_to "Home", root_path %>
+  <span aria-hidden="true">/</span>
+  <%= link_to "Categories", categories_path %>
+  <span aria-hidden="true">/</span>
+  <span aria-current="page"><%= @category.name %></span>
+</nav>
+
+<div class="catalogue-header">
+  <div>
+    <h1><%= @category.name %></h1>
+    <% if @category.description.present? %>
+      <p><%= @category.description %></p>
+    <% end %>
+  </div>
+</div>
 
 <% if @products.any? %>
   <div class="product-grid">
     <%= render partial: "products/product_card", collection: @products, as: :product %>
   </div>
 <% else %>
-  <p class="empty-state">No products in this category yet.</p>
+  <div class="empty-state">
+    <h3>Nothing in <%= @category.name %> yet.</h3>
+    <p>New pieces are added regularly. Check back soon.</p>
+    <%= link_to "Browse everything", products_path, class: "button" %>
+  </div>
 <% end %>

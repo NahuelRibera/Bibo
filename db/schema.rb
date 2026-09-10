@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_09_184117) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_10_082025) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -41,6 +41,49 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_09_184117) do
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_categories_on_name", unique: true
     t.index ["slug"], name: "index_categories_on_slug", unique: true
+  end
+
+  create_table "order_items", force: :cascade do |t|
+    t.bigint "order_id", null: false
+    t.bigint "product_variant_id"
+    t.string "product_name", null: false
+    t.string "product_slug", null: false
+    t.string "variant_label"
+    t.string "sku", null: false
+    t.integer "unit_price_cents", null: false
+    t.integer "quantity", null: false
+    t.integer "line_total_cents", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_order_items_on_order_id"
+    t.index ["product_variant_id"], name: "index_order_items_on_product_variant_id"
+    t.check_constraint "line_total_cents = (unit_price_cents * quantity)", name: "order_items_line_total_matches_unit_price_and_quantity"
+    t.check_constraint "line_total_cents >= 0", name: "order_items_line_total_cents_non_negative"
+    t.check_constraint "quantity >= 1", name: "order_items_quantity_at_least_1"
+    t.check_constraint "unit_price_cents >= 0", name: "order_items_unit_price_cents_non_negative"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.string "token", null: false
+    t.string "status", default: "pending", null: false
+    t.integer "subtotal_cents", default: 0, null: false
+    t.integer "shipping_cents", default: 0, null: false
+    t.integer "total_cents", default: 0, null: false
+    t.string "currency", default: "eur", null: false
+    t.string "stripe_checkout_session_id"
+    t.string "stripe_payment_intent_id"
+    t.string "customer_email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_orders_on_status"
+    t.index ["stripe_checkout_session_id"], name: "index_orders_on_stripe_checkout_session_id", unique: true
+    t.index ["stripe_payment_intent_id"], name: "index_orders_on_stripe_payment_intent_id", unique: true
+    t.index ["token"], name: "index_orders_on_token", unique: true
+    t.check_constraint "shipping_cents >= 0", name: "orders_shipping_cents_non_negative"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'paid'::character varying, 'cancelled'::character varying]::text[])", name: "orders_status_allowed"
+    t.check_constraint "subtotal_cents >= 0", name: "orders_subtotal_cents_non_negative"
+    t.check_constraint "total_cents = (subtotal_cents + shipping_cents)", name: "orders_total_equals_subtotal_plus_shipping"
+    t.check_constraint "total_cents >= 0", name: "orders_total_cents_non_negative"
   end
 
   create_table "product_images", force: :cascade do |t|
@@ -109,6 +152,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_09_184117) do
 
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "product_variants"
+  add_foreign_key "order_items", "orders"
+  add_foreign_key "order_items", "product_variants", on_delete: :nullify
   add_foreign_key "product_images", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "categories"

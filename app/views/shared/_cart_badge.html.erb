@@ -1,0 +1,2 @@
+<% qty = current_cart.cart_items.sum(:quantity) %>
+<span id="cart_count" class="icon-badge" <%= "hidden" unless qty.positive? %>><%= qty %></span>

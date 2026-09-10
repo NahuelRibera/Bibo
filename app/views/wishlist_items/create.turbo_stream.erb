@@ -1,0 +1,6 @@
+<%= turbo_stream.replace dom_id(@product, :wishlist_button) do %>
+  <%= render "products/wishlist_button", product: @product %>
+<% end %>
+<%= turbo_stream.replace "wishlist_count" do %>
+  <%= render "shared/wishlist_badge" %>
+<% end %>

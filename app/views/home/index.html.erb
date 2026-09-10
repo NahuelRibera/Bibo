@@ -1,17 +1,33 @@
 <section class="hero">
-  <p class="hero__eyebrow">Small details, a nicer home</p>
-  <h1>Everyday essentials for a more you.</h1>
-  <p>Cute, functional and affordable pieces for a home you love.</p>
-  <%= link_to "Shop now", products_path, class: "button" %>
+  <div class="hero__copy">
+    <p class="eyebrow">Small details. A nicer home.</p>
+    <h1>Everyday essentials for a more you.</h1>
+    <p class="hero__lede">Cute, functional and affordable pieces for a home you love.</p>
+    <%= link_to products_path, class: "button" do %>
+      Shop now <%= icon(:chevron_right, size: 16) %>
+    <% end %>
+  </div>
+
+  <div class="hero__art" role="img" aria-label="A warm, sunlit corner of a home styled with ceramics and natural wood">
+    <div class="hero__art-scene"></div>
+    <p class="hero__caption">Good things, home</p>
+  </div>
 </section>
 
 <section class="section">
   <div class="section__header">
-    <h2>Categories</h2>
+    <h2>Shop by category</h2>
   </div>
-  <div class="category-grid">
+  <div class="quick-categories">
     <% @categories.each do |category| %>
-      <%= link_to category.name, category_path(category), class: "category-chip" %>
+      <%= link_to category_path(category), class: "quick-category" do %>
+        <span class="quick-category__icon"><%= category_icon(category.slug) %></span>
+        <span class="quick-category__label"><%= category.name %></span>
+      <% end %>
+    <% end %>
+    <%= link_to products_path, class: "quick-category" do %>
+      <span class="quick-category__icon"><%= icon(:bag, size: 26) %></span>
+      <span class="quick-category__label">All</span>
     <% end %>
   </div>
 </section>
@@ -20,7 +36,7 @@
   <section class="section">
     <div class="section__header">
       <h2>Trending now</h2>
-      <%= link_to "View all", products_path %>
+      <%= link_to "View all →", products_path %>
     </div>
     <div class="product-grid">
       <%= render partial: "products/product_card", collection: @trending_products, as: :product %>
@@ -28,11 +44,26 @@
   </section>
 <% end %>
 
+<section class="section">
+  <div class="curated">
+    <div class="curated__copy">
+      <p class="eyebrow">Little things, better spaces</p>
+      <h2>Considered pieces, not clutter</h2>
+      <p>
+        A few good pieces change how a room feels. Bibo puts together simple, affordable
+        homeware that works well side by side, so your space feels more like yours.
+      </p>
+      <%= link_to "Explore the catalogue →", products_path, class: "button button--secondary" %>
+    </div>
+    <div class="curated__art" role="img" aria-label="Coordinated ceramics and natural textures styled together"></div>
+  </div>
+</section>
+
 <% if @featured_products.any? %>
   <section class="section">
     <div class="section__header">
-      <h2>Featured</h2>
-      <%= link_to "View all", products_path %>
+      <h2>Featured picks</h2>
+      <%= link_to "View all →", products_path %>
     </div>
     <div class="product-grid">
       <%= render partial: "products/product_card", collection: @featured_products, as: :product %>

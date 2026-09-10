@@ -47,4 +47,26 @@ class CartFlowTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to product_path(variant.product)
   end
+
+  test "browsing a product, choosing a specific variant and adding to cart preserves that exact variant" do
+    product = create_product(name: "Glass Storage Jars")
+    wrong_size_wrong_colour = create_variant(product: product, sku: "WRONG", option_label: "Set of 2", colour: "Natural", price_cents: 1999, stock: 10)
+    chosen = create_variant(product: product, sku: "CHOSEN", option_label: "Set of 3", colour: "Walnut", price_cents: 2499, stock: 10)
+
+    get product_path(product)
+    assert_response :success
+    # Both option pills for the chosen combination are on the page, driven by real variant data.
+    assert_match "Set of 3", response.body
+    assert_match "Walnut", response.body
+
+    post cart_items_path, params: { product_variant_id: chosen.id, quantity: 1 }
+    assert_redirected_to cart_path
+
+    cart = Cart.find_by(token: session[:cart_token])
+    item = cart.cart_items.sole
+
+    assert_equal chosen, item.product_variant
+    assert_not_equal wrong_size_wrong_colour, item.product_variant
+    assert_equal "Set of 3, Walnut", item.product_variant.label
+  end
 end

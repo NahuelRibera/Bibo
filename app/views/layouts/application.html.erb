@@ -6,41 +6,138 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body data-controller="mobile-nav">
+    <a href="#main" class="skip-link">Skip to content</a>
+
     <header class="site-header">
       <div class="container site-header__inner">
         <%= link_to "Bibo", root_path, class: "site-header__logo" %>
 
-        <nav class="site-header__nav">
-          <%= link_to "Home", root_path %>
-          <%= link_to "Shop", products_path %>
-          <%= link_to "Categories", categories_path %>
+        <nav class="site-header__nav" aria-label="Primary">
+          <%= link_to "Home", root_path, aria: { current: current_page?(root_path) ? "page" : nil } %>
+          <%= link_to "Categories", categories_path, aria: { current: current_page?(categories_path) ? "page" : nil } %>
+          <%= link_to "About", about_path, aria: { current: current_page?(about_path) ? "page" : nil } %>
         </nav>
 
-        <%= link_to cart_path, class: "site-header__cart" do %>
-          Cart (<%= current_cart.cart_items.sum(:quantity) %>)
-        <% end %>
+        <div class="site-header__actions">
+          <%= form_with url: products_path, method: :get, class: "site-header__search", role: "search" do %>
+            <%= icon(:search) %>
+            <label for="header-search" class="visually-hidden">Search products</label>
+            <input type="search" id="header-search" name="q" placeholder="Search for anything…" value="<%= params[:q] %>">
+          <% end %>
+
+          <%= link_to wishlist_path, class: "icon-button", aria: { label: "Wishlist" } do %>
+            <%= icon(:heart) %>
+            <%= render "shared/wishlist_badge" %>
+          <% end %>
+
+          <%= link_to account_path, class: "icon-button", aria: { label: "Account" } do %>
+            <%= icon(:user) %>
+          <% end %>
+
+          <%= link_to cart_path, class: "icon-button", aria: { label: "Cart" } do %>
+            <%= icon(:bag) %>
+            <%= render "shared/cart_badge" %>
+          <% end %>
+
+          <button type="button" class="icon-button site-header__menu-toggle" data-action="mobile-nav#open" aria-haspopup="true" aria-controls="mobile-nav" aria-label="Open menu">
+            <%= icon(:menu) %>
+          </button>
+        </div>
       </div>
     </header>
 
-    <main class="container">
-      <% if notice %>
-        <p class="flash flash--notice"><%= notice %></p>
-      <% end %>
-      <% if alert %>
-        <p class="flash flash--alert"><%= alert %></p>
-      <% end %>
+    <div id="mobile-nav" class="mobile-nav" data-mobile-nav-target="drawer">
+      <div class="mobile-nav__backdrop" data-action="click->mobile-nav#close"></div>
+      <div class="mobile-nav__panel" role="dialog" aria-modal="true" aria-label="Menu" data-mobile-nav-target="panel">
+        <div class="mobile-nav__header">
+          <span class="site-header__logo">Bibo</span>
+          <button type="button" class="icon-button" data-action="mobile-nav#close" aria-label="Close menu">
+            <%= icon(:close) %>
+          </button>
+        </div>
+
+        <%= form_with url: products_path, method: :get, class: "mobile-nav__search", role: "search" do %>
+          <%= icon(:search) %>
+          <label for="mobile-search" class="visually-hidden">Search products</label>
+          <input type="search" id="mobile-search" name="q" placeholder="Search for anything…" value="<%= params[:q] %>">
+        <% end %>
+
+        <nav class="mobile-nav__links" aria-label="Primary">
+          <%= link_to "Home", root_path %>
+          <%= link_to "Shop", products_path %>
+          <%= link_to "Categories", categories_path %>
+          <%= link_to "Wishlist", wishlist_path %>
+          <%= link_to "About", about_path %>
+          <%= link_to "Account", account_path %>
+        </nav>
+
+        <div class="mobile-nav__actions">
+          <%= link_to cart_path, class: "button button--block" do %>
+            Cart · <%= current_cart.cart_items.sum(:quantity) %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <main id="main" class="container">
+      <div data-controller="flash">
+        <% if notice %>
+          <p class="flash flash--notice" data-flash-target="message"><%= notice %></p>
+        <% end %>
+        <% if alert %>
+          <p class="flash flash--alert" data-flash-target="message"><%= alert %></p>
+        <% end %>
+      </div>
 
       <%= yield %>
     </main>
 
     <footer class="site-footer">
       <div class="container">
-        Bibo — thoughtfully curated home essentials.
+        <div class="site-footer__grid">
+          <div>
+            <p class="site-footer__brand">Bibo</p>
+            <p class="site-footer__tagline">Small details for a nicer home: affordable, considered pieces for everyday living.</p>
+          </div>
+
+          <div>
+            <h4>Shop</h4>
+            <ul>
+              <li><%= link_to "All categories", categories_path %></li>
+              <li><%= link_to "Trending", products_path(sort: "featured") %></li>
+              <li><%= link_to "New in", products_path(sort: "newest") %></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4>Help</h4>
+            <ul>
+              <li><%= link_to "Shipping & returns", about_path %></li>
+              <li><%= link_to "Contact", about_path %></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4>About</h4>
+            <ul>
+              <li><%= link_to "About Bibo", about_path %></li>
+              <li><%= link_to "Wishlist", wishlist_path %></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="site-footer__bottom">
+          Bibo is a portfolio project, not a live store.
+        </div>
       </div>
     </footer>
   </body>

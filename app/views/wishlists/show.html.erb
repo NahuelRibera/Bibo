@@ -1,0 +1,11 @@
+<h1>Your wishlist</h1>
+
+<div id="wishlist_content">
+  <% if @products.any? %>
+    <div class="product-grid">
+      <%= render partial: "products/product_card", collection: @products, as: :product %>
+    </div>
+  <% else %>
+    <%= render "wishlists/empty_state" %>
+  <% end %>
+</div>
